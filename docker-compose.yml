@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  nginx:
+    image: ${DOCKER_IMAGE?}
+    container_name: ${SERVICE_NAME?} 
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro      
+    restart: unless-stopped
+    networks:
+      - traefik-network
+    labels:         
+      - "traefik.http.routers.${SERVICE_NAME?}-router.rule=Host(`${SERVICE_NAME?}.bensnetwork.de`)"
+      - "traefik.enable=true"
+      - "traefik.http.services.${SERVICE_NAME?}-router.loadbalancer.server.port=${SERVICE_PORT}"
+      - "traefik.http.routers.${SERVICE_NAME?}-router.tls=true"
+
+networks:
+  traefik-network:
+    external: true
